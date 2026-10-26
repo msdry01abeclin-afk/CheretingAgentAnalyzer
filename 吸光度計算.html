@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吸光度 → 透過率 変換</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Meiryo', sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #16213e;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            width: 420px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #e94560;
+        }
+
+        label {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1.2rem;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #fff;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #e94560;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 36px;
+            font-size: 1.1rem;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #c73650;
+        }
+
+        .result {
+            margin-top: 28px;
+            font-size: 1.3rem;
+            min-height: 2em;
+            color: #53d8fb;
+        }
+
+        .log {
+            margin-top: 24px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #aaa;
+            border-top: 1px solid #0f3460;
+            padding-top: 12px;
+        }
+
+        .log p {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>吸光度 → 透過率 変換</h1>
+
+        <label for="absorbance">吸光度：</label>
+        <input type="number" id="absorbance" step="any" placeholder="例: 0.5" autofocus>
+
+        <br>
+        <button id="calcBtn">変換</button>
+
+        <div class="result" id="result"></div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const transmittance = a => (10 ** (-a) * 100).toFixed(2);
+
+        const absInput  = document.getElementById('absorbance');
+        const resultDiv = document.getElementById('result');
+        const logDiv    = document.getElementById('log');
+        const calcBtn   = document.getElementById('calcBtn');
+
+        function convert() {
+            const val = parseFloat(absInput.value);
+            if (isNaN(val)) {
+                resultDiv.textContent = '数値を入力してください';
+                return;
+            }
+            const t = transmittance(val);
+            resultDiv.textContent = `透過率・・・${t}%`;
+
+            // 履歴を追加
+            const p = document.createElement('p');
+            p.textContent = `吸光度 ${val}  →  透過率 ${t}%`;
+            logDiv.prepend(p);
+
+            absInput.value = '';
+            absInput.focus();
+        }
+
+        calcBtn.addEventListener('click', convert);
+
+        absInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') convert();
+        });
+    </script>
+</body>
+</html>
